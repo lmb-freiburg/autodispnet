@@ -19,7 +19,7 @@ ENCODER_OPS = {
   }
 
 
-# Removing DilatedSeparableConv because tf doesnt allow stride!=1 with dilation rate !=1
+# Removing DilatedSeparableConv because tf doesn't support stride!=1 with dilation rate !=1
 ENCODER_REDUCTION_OPS = {
   'none'         : lambda C, stride, affine, trainable: ZeroE(stride),
   'max_pool_3x3' : lambda C, stride, affine, trainable: tf.keras.layers.MaxPooling2D(3, strides=stride, padding='same', data_format='channels_first'),
@@ -105,7 +105,7 @@ class BatchNorm(tf.keras.layers.Layer):
         super().__init__()
         self.trainable = trainable
         self.affine = affine
-        self.no_bn = True #nd.config.get('no_bn', False)
+        self.no_bn = nd.config.get('no_bn', True)
         if not self.no_bn:
             if affine:
                 self.bn =  tf.keras.layers.BatchNormalization(axis=1, scale=True, center=True,
