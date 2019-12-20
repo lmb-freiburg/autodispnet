@@ -12,9 +12,9 @@ Note: We provide deployment code only.
 * Clone this repository.
 
 ## Running networks
-* Change your directory to a network directory (autodispnet/nets).
+* Change your directory to the network directory (`autodispnet/nets`).
 * Download pre-trained weights with `download_weights.sh`.
-  We provide pre-trained weights for networks trained on FlyingThings only and fine-tuned on KITTI.
+  Pre-trained weights are provided for networks trained on FlyingThings (CSS) and fine-tuned on KITTI (CSS-KITTI).
 * Go to a network directory (Eg: autodispnet/nets/CSS) and use the following command to test the network on an image pair:
 
   `python3 controller.py eval image0_path image1_path out_dir`
