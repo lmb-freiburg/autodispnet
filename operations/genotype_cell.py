@@ -4,13 +4,6 @@ import numpy as np
 
 class EncoderCell:
     def __init__(self, genotype, C, reduction, reduction_prev, trainable=True):
-        """
-        genotype: extracted genotype for the encoder cell
-        C: number of output channels for the cell
-        reduction: Whether current cell is a reduction cell
-        reduction_prev: Whether previous cell was a reduction cell
-        trainable: whether the cell is trainable
-        """
         affine = True
         self.affine = affine
         super().__init__()
@@ -60,13 +53,6 @@ class EncoderCell:
 
 class DecoderCell:
     def __init__(self, genotype, C, upsample, upsample_prev, trainable=True):
-        """
-        genotype: extracted genotype for the encoder cell
-        C: number of output channels for the cell
-        upsample: Whether current cell is a upsampling
-        upsample_prev: Whether previous cell was a upsampling cell
-        trainable: whether the cell is trainable
-        """
         super().__init__()
         affine = True
         self.affine = affine

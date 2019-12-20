@@ -2,14 +2,13 @@ import netdef_slim as nd
 nd.choose_framework('tensorflow')
 
 from netdef_slim.utils import io
-import argparse, re, datetime, sys, tb, os
+import argparse, re, datetime, sys, os
 import tensorflow as tf
 from autodispnet.controller.net_actions import NetActions
 import signal
 
 class BaseController:
     base_path=None
-
     def __init__(self, path=None, net_actions=NetActions):
         if path is not None:
             self.base_path = path

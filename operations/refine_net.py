@@ -57,7 +57,7 @@ class DispNetSGenotype(DispNetGenotypeBase):
             reduction_prev = reduction
             self.encoder_cells += [cell]
 
-        self.pred_blocks = [DispPredRefineBlock(self.trainable)] # Change to residual block
+        self.pred_blocks = [DispPredRefineBlock(self.trainable)]
         upsample_prev = False
         for i in range(0, self._decoder_depth):
             # Always upsample
@@ -126,10 +126,6 @@ class DispNetSGenotype(DispNetGenotypeBase):
             predictions['all'].append(prev_pred)
 
             s0 = s1
-
-            #print("Feature store: ")
-            #for (k,v) in self._feature_store.items():
-            #    print("Level {} : {}, {}".format(k, v.name, v.shape))
 
             for i, cell in enumerate(self.decoder_cells):
                 s_support = self._feature_store[spatial_level-1] # get a spatial feature from a higher spatial level

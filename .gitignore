@@ -19,6 +19,6 @@ db.sqlite3
 *.h5
 *.*~
 checkpoints
-*.png
 *.float3
+nets/*/*.png
 *tfevents*
