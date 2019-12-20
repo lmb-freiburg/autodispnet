@@ -12,4 +12,5 @@ download () {
 }
 
 download CSS 00__FT3D__genotype 150000
+download css 00__FT3D__genotype 600000
 download CSS-kitti 00__kitti__genotype 90000
