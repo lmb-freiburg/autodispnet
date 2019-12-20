@@ -3,7 +3,7 @@ import os
 import json
 from collections import namedtuple
 from model_genotype import model_func
-from netdef.schedules.named_schedule import NamedSchedule
+from netdef_slim.schedules.named_schedule import NamedSchedule
 
 nd.evo_manager.set_training_dir(os.path.join(os.path.dirname(__file__), 'training'))
 
