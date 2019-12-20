@@ -1,10 +1,10 @@
 import tensorflow as tf
 import os, sys, time
-import netdef as nd
+import netdef_slim as nd
 import numpy as np
 import timeit
 import signal
-from netdef.tensorflow.tools.trainer.simpletrainer import SimpleTrainer
+from netdef_slim.tensorflow.tools.trainer.simpletrainer import SimpleTrainer
 from tensorflow.contrib import slim
 tf.logging.set_verbosity(tf.logging.INFO)
 from tensorflow.python.framework import graph_util
@@ -22,17 +22,18 @@ def comma_me(amount):
         else:
             return comma_me(new)
 
-class BaseNetActions:
+class NetActions:
 
     def __init__(self, net_dir, save_snapshots=True, save_summaries=True):
         self._check_evo_manager_init()
         self.save_snapshots = save_snapshots
         self.save_summaries = save_summaries
-        self.saver_interval = nd.config.get('saver_interval', 100000)
-        self.display_interval = nd.config.get('display_interval', 100)
-        self.summary_log_interval = nd.config.get('summary_log_interval', 10)
         self.net_dir = net_dir
         self.eval_session = None
+
+    def _check_evo_manager_init(self):
+        if (len(nd.evo_manager.evolutions()) == 0):
+            raise ValueError('Evolutions are empty. Make sure evo manager has correctly loaded config.py in your network directory')
 
     def _create_session(self):
         config = tf.ConfigProto(log_device_placement=False,
@@ -130,3 +131,7 @@ class BaseNetActions:
         out = session.run(pred, feed_dict={ pl_image0: image_0,
                                             pl_image1: image_1})
         return out
+
+    def _signal_handler(self, signum, frame):
+        print("received signal {0}".format(signum), flush=True)
+        sys.exit(0)

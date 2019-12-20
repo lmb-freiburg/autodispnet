@@ -1,15 +1,12 @@
-from operations import *
-from hyparchsearch.cnn.architecture.disparity.genotype_base import *
-from hyparchsearch.cnn.architecture.disparity.common import Correlation1D, DispPredBlock
-from genotype_cell import *
+from autodispnet.operations.cell_ops import *
+from autodispnet.operations.common import *
+from autodispnet.operations.genotype_cell import *
 
 
 class DispNetCGenotype(DispNetGenotypeBase):
 
     def init_model(self):
-        print("Initializing model...")
         C_curr = int(self._stem_multiplier*self._C)
-        print("Stem channels: {}".format(C_curr))
         self.stems = [ConvReLU(C_out=C_curr, kernel_size=7,
                                                         stride=2,
                                                         trainable=self.trainable),
@@ -21,7 +18,6 @@ class DispNetCGenotype(DispNetGenotypeBase):
         reduction_prev = False
         for i in range(0, self._feature_depth):
             C_curr *= 2
-            print("Feature block {} channels: {}".format( i, C_curr))
             reduction = True
             cell = EncoderCell(self.genotype, C_curr, reduction, reduction_prev, trainable=self.trainable)
             reduction_prev = reduction
@@ -35,7 +31,6 @@ class DispNetCGenotype(DispNetGenotypeBase):
                 reduction = True
             else:
                 reduction = False
-            print("Encoder block {} channels: {}".format( i, C_curr))
             cell = EncoderCell(self.genotype, C_curr, reduction, reduction_prev, trainable=self.trainable)
             reduction_prev = reduction
             self.encoder_cells += [cell]
@@ -47,7 +42,6 @@ class DispNetCGenotype(DispNetGenotypeBase):
             # Always upsample
             upsample=True
             C_curr=int(C_curr/2)
-            print("Decoder block {} channels: {}".format( i, C_curr))
             cell = DecoderCell(self.genotype, C_curr, upsample=upsample, upsample_prev=upsample_prev, trainable=self.trainable)
             self.decoder_cells.append(cell)
             self.pred_blocks.append(DispPredBlock(self.trainable))

@@ -1,8 +1,7 @@
-from operations import *
-from genotype_cell import *
-from hyparchsearch.cnn.architecture.disparity.genotype_base import *
+from autodispnet.operations.cell_ops import *
+from autodispnet.operations.genotype_cell import *
+from autodispnet.operations.common import *
 
-Genotype = namedtuple('Genotype', 'normal reduce upsample')
 
 class DispPredRefineBlock(tf.keras.layers.Layer):
     def __init__(self, trainable):
@@ -38,9 +37,7 @@ class DispNetSGenotype(DispNetGenotypeBase):
         super().__init__(*args, **kwargs)
 
     def init_model(self):
-        print("Initializing model...")
         C_curr = int(self._stem_multiplier*self._C)
-        print("Stem channels: {}".format(C_curr))
         self.stems = [ConvReLU(C_out=C_curr, kernel_size=7,
                                                         stride=2,
                                                         trainable=self.trainable),
@@ -56,7 +53,6 @@ class DispNetSGenotype(DispNetGenotypeBase):
                 reduction = True
             else:
                 reduction = False
-            print("Encoder block {} channels: {}".format( i, C_curr))
             cell = EncoderCell(self.genotype, C_curr, reduction, reduction_prev, trainable=self.trainable)
             reduction_prev = reduction
             self.encoder_cells += [cell]
@@ -67,7 +63,6 @@ class DispNetSGenotype(DispNetGenotypeBase):
             # Always upsample
             upsample=True
             C_curr=int(C_curr/2)
-            print("Decoder block {} channels: {}".format( i, C_curr))
             cell = DecoderCell(self.genotype, C_curr, upsample=upsample, upsample_prev=upsample_prev, trainable=self.trainable)
             self.decoder_cells.append(cell)
             self.pred_blocks.append(DispPredRefineBlock(self.trainable))
@@ -132,9 +127,9 @@ class DispNetSGenotype(DispNetGenotypeBase):
 
             s0 = s1
 
-            print("Feature store: ")
-            for (k,v) in self._feature_store.items():
-                print("Level {} : {}, {}".format(k, v.name, v.shape))
+            #print("Feature store: ")
+            #for (k,v) in self._feature_store.items():
+            #    print("Level {} : {}, {}".format(k, v.name, v.shape))
 
             for i, cell in enumerate(self.decoder_cells):
                 s_support = self._feature_store[spatial_level-1] # get a spatial feature from a higher spatial level

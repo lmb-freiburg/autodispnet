@@ -1,5 +1,5 @@
 import tensorflow as tf
-import netdef as nd
+import netdef_slim as nd
 from lmbspecialops import leaky_relu
 
 k_initializer = tf.contrib.layers.variance_scaling_initializer(factor=2, mode='FAN_IN', uniform=False)

@@ -1,15 +1,16 @@
-import netdef as nd
+import netdef_slim as nd
 nd.choose_framework('tensorflow')
 
+from netdef_slim.utils import io
 import argparse, re, datetime, sys, tb, os
 import tensorflow as tf
-from net_actions import BaseNetActions
+from autodispnet.controller.net_actions import NetActions
 import signal
 
 class BaseController:
     base_path=None
 
-    def __init__(self, path=None, net_actions=BaseNetActions):
+    def __init__(self, path=None, net_actions=NetActions):
         if path is not None:
             self.base_path = path
         nd.load_module(os.path.join(self.base_path, 'config.py'))
@@ -37,21 +38,6 @@ class BaseController:
         self._subparsers = self._parser.add_subparsers(dest='command', prog='controller')
 
     def _configure_subparsers(self):
-        # test
-        subparser = self._subparsers.add_parser('test', help='test a network')
-        subparser.add_argument('--dataset',             help='test dataset', default=None)
-        subparser.add_argument('--state',               help='state pointing to the snapshot to test, in the form EvoName:iteration', default=None)
-        subparser.add_argument('--output',      help='output images to folder output_...', action='store_true')
-
-        def run_test():
-            args = self._args
-            states = []
-            states.append(args.state)
-            for s in states:
-                print("Testing at state: {} ".format(s))
-                self.test(dataset=args.dataset, state=nd.evo_manager.get_state(s), output=args.output, caffe_weights=args.caffe_weights)
-            sys.exit(nd.status.SUCCESS)
-        self._command_hooks['test'] = run_test
 
         # eval
         subparser = self._subparsers.add_parser('eval', help='run network on images')
@@ -67,20 +53,6 @@ class BaseController:
                       state=self._args.state)
             sys.exit(nd.status.SUCCESS)
         self._command_hooks['eval'] = eval
-
-        # perf_test
-        subparser = self._subparsers.add_parser('perf-test', help='measure of runtime of core net with no data I/O')
-        subparser.add_argument('--burn_in',     help='number of iters to burn-in before measureing runtime', default=50)
-        subparser.add_argument('--iters',       help='number of iters to average runtime', default=100)
-        subparser.add_argument('--resolution',  help='the resolution used to measure runtime (width height), default is the Sintel resolution', nargs=2, default=(1024, 436))
-
-        def perf_test():
-            self.perf_test(burn_in = self._args.burn_in,
-                           iters=self._args.iters,
-                           resolution=self._args.resolution)
-            sys.exit(nd.status.SUCCESS)
-        self._command_hooks['perf-test'] = perf_test
-
 
         # eval-list
         subparser = self._subparsers.add_parser('eval-list', help='run network on a list of images')
@@ -111,50 +83,6 @@ class BaseController:
             sys.exit(nd.status.SUCCESS)
         self._command_hooks['state'] = state
 
-        # train
-        subparser = self._subparsers.add_parser('train', help='train a network from scratch')
-        subparser.add_argument('--weights',     help='path to snapshot to initialize from', default=None)
-        subparser.add_argument('--walltime',    help='process walltime', nargs=1, default=['24:00:00'], required=False, type=str)
-        subparser.add_argument('--check',       help='check only', default=False, required=False, action='store_true')
-        def train():
-            args = self._args
-            if 'finetune_from' in nd.config.keys():
-                weights = nd.config['finetune_from']
-            else:
-                weights = None
-            wt_match = re.compile('([0-9]{2}):([0-9]{2}):([0-9]{2})').match(args.walltime[0])
-            if not wt_match:
-                raise ValueError('Invalid walltime: use the format HH:MM:SS')
-            wt_timedelta = datetime.timedelta(hours=int(wt_match.group(1)), minutes=int(wt_match.group(2)),
-                                              seconds=int(wt_match.group(3)))
-            # always finetune when using train
-            print("Finetune weights: {}".format(weights))
-            self.train(walltime=wt_timedelta.total_seconds(), weights=weights, finetune=True, check_only=args.check)
-            sys.exit(nd.status.SUCCESS)
-        self._command_hooks['train'] = train
-
-        # continue
-        subparser = self._subparsers.add_parser('continue', help='continue training from last saved (or specified) state')
-        subparser.add_argument('--state',       help='state from which to continue (default=last)', default=None)
-        subparser.add_argument('--check',       help='check only if command can be executed, but do not run', action="store_true")
-        subparser.add_argument('--walltime', help='process walltime', nargs=1, default=['24:00:00'], required=False, type=str)
-        def continue_training():
-            args = self._args
-            wt_match = re.compile('([0-9]{2}):([0-9]{2}):([0-9]{2})').match(args.walltime[0])
-            if not wt_match:
-                raise ValueError('Invalid walltime: use the format HH:MM:SS')
-            wt_timedelta = datetime.timedelta(hours=int(wt_match.group(1)), minutes=int(wt_match.group(2)),
-                                              seconds=int(wt_match.group(3)))
-            if args.state is not None: nd.evo_manager.clean_after(args.state)
-            self.train(walltime=wt_timedelta.total_seconds(), weights=None, check_only=args.check, finetune=False)
-            sys.exit(nd.status.SUCCESS)
-        self._command_hooks['continue'] = continue_training
-
-        # copy
-        subparser = self._subparsers.add_parser('copy', help='copy current network')
-        subparser.add_argument('tgt', help='target location')
-        subparser.add_argument('-w','--with-snapshot', help='copy with snapshot', default=False, action='store_true')
-        subparser.add_argument('-s','--state', help='state to copy', default=None)
         def copy():
             self.copy(
                 self._args.tgt,
@@ -174,16 +102,14 @@ class BaseController:
         self._command_hooks['flops'] = self.flops
 
 
-    def train(self, **kwargs):
-        return self.net_actions(net_dir=self.base_path).train(**kwargs)
 
     def eval(self, **kwargs):
         out_dir = kwargs.pop('out_dir')
         output = self.net_actions(net_dir=self.base_path).eval(**kwargs)
+        out_path = os.path.join(out_dir, 'disp.float3')
+        print("Writing output to {}".format(out_path))
+        io.write(out_path, output[0,:,:,:].transpose(1,2,0))
         return output
-
-    def test(self, **kwargs):
-        return self.net_actions(net_dir=self.base_path).test(**kwargs)
 
     def perf_test(self, **kwargs):
         return self.net_actions(net_dir=self.base_path).perf_test(**kwargs)

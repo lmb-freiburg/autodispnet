@@ -1,5 +1,5 @@
 import tensorflow as tf
-from operations import *
+from autodispnet.operations.cell_ops import *
 import numpy as np
 
 class EncoderCell:
