@@ -1,5 +1,5 @@
 # AutoDispNet
-Code for [AutoDispNet: Improving Disparity Estimation with AutoML (ICCV 2019)](https://lmb.informatik.uni-freiburg.de/Publications/2019/SMB19/). Parts of this codebase are inspired from the [DARTS implementation](https://github.com/quark0/darts).
+Code for [AutoDispNet: Improving Disparity Estimation with AutoML (ICCV 2019)](https://lmb.informatik.uni-freiburg.de/Publications/2019/SMB19/). Parts of this codebase are inspired from [DARTS](https://github.com/quark0/darts).
 
 Note: We provide deployment code only.
 
