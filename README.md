@@ -1,5 +1,5 @@
 # AutoDispNet
-Code for [AutoDispNet: Improving Disparity Estimation with AutoML (ICCV 2019)](https://lmb.informatik.uni-freiburg.de/Publications/2019/SMB19/).
+Code for [AutoDispNet: Improving Disparity Estimation with AutoML (ICCV 2019)](https://lmb.informatik.uni-freiburg.de/Publications/2019/SMB19/). Parts of this codebase are inspired from the [DARTS implementation](https://github.com/quark0/darts).
 
 Note: We provide deployment code only.
 
@@ -14,7 +14,7 @@ Note: We provide deployment code only.
 ## Running networks
 * Change your directory to the network directory (`autodispnet/nets`).
 * Download pre-trained weights with `download_weights.sh`.
-  Pre-trained weights are provided for networks trained on FlyingThings (`CSS`, `css`) and  fine-tuned on KITTI (CSS-KITTI).
+  Pre-trained weights are provided for networks trained on FlyingThings (`CSS`, `css`) and  fine-tuned on KITTI (`CSS-KITTI`).
   `css` is a network with smaller memory footprint (see paper for details).
 * Go to a network directory (Eg: autodispnet/nets/CSS) and use the following command to test the network on an image pair:
 
