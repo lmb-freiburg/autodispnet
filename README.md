@@ -1,7 +1,7 @@
 # AutoDispNet
 Code for [AutoDispNet: Improving Disparity Estimation with AutoML (ICCV 2019)](https://lmb.informatik.uni-freiburg.de/Publications/2019/SMB19/).
 
-Note: We provide code for deployment only.
+Note: We provide deployment code only.
 
 ![](teaser-1.png)
 
