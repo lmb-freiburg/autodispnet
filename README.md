@@ -13,6 +13,7 @@ Note: We provide code for deployment only.
 * Change your directory to a network directory (Eg: autodispnet/nets/CSS)
 * Download pre-trained with with `download_weights.sh`
 * Use the following command to test the network on an image pair:
+
   `python3 controller.py eval image0_path image1_path out_dir`
 * The output is stored in a binary format with `.float3` extension (Information on reading the output is [here](https://github.com/lmb-freiburg/netdef_models/blob/master/README.md)).
 
