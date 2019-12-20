@@ -3,7 +3,7 @@ Code for [AutoDispNet: Improving Disparity Estimation with AutoML (ICCV 2019)](h
 
 Note: We provide code for deployment only.
 
-![](teaser.png)
+![](teaser-1.png)
 
 
 ## Setup
