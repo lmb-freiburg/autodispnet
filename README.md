@@ -7,6 +7,7 @@ Note: We provide deployment code only.
 
 
 ## Setup
+* tf 1.12
 * Compile and install [lmbspecialops](https://github.com/lmb-freiburg/lmbspecialops/tree/eccv18).
 * Install [netdef_slim](https://github.com/lmb-freiburg/netdef_slim).
 * Clone this repository.
